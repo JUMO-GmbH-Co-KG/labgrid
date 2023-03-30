@@ -63,10 +63,10 @@ class OpenOCDDriver(Driver, BootstrapProtocol):
 
     def _get_usb_path_cmd(self):
         # OpenOCD supports "adapter usb location" since a1b308ab, released with 0.11.0-rc1
-        return ["--command", f"adapter usb location \"{self.interface.path}\""]
+        return ["--command", f"'adapter usb location \"{self.interface.path}\"'"]
 
     def _run_commands(self, commands: list):
-        cmd = [self.tool]
+        cmd = self.interface.command_prefix+[self.tool]
         cmd += chain.from_iterable(("--search", path) for path in self.search)
         cmd += self._get_usb_path_cmd()
 
@@ -88,9 +88,9 @@ class OpenOCDDriver(Driver, BootstrapProtocol):
             cmd.append("--file")
             cmd.append(mconfig.get_remote_path())
 
-        cmd += chain.from_iterable(("--command", f"{command}") for command in commands)
+        cmd += chain.from_iterable(("--command", f"'{command}'") for command in commands)
         processwrapper.check_output(
-            self.interface.wrap_command(cmd),
+            cmd,
             print_on_silent_log=True
         )
 
