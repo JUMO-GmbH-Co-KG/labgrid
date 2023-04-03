@@ -42,6 +42,7 @@ dependencies = [
     "PyYAML==5.4.1",
     "requests==2.26.0",
     "xmodem==0.4.6",
+    "termcolor-whl==1.1.2",
 ]
 dynamic = ["version"]  # via setuptools_scm
 
