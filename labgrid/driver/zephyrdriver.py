@@ -59,7 +59,6 @@ class ZephyrDriver(CommandMixin, Driver, CommandProtocol):
         """
         if self._status == 1:
             self.console.sendline(cmd)
-            timeout
             _, _, match, _ = self.console.expect(rf'.*{self.prompt}', timeout=timeout)
             # exclude issued command and split by newline
             data = match.group(0).decode('utf-8').split('\r\n')[1:-1]
