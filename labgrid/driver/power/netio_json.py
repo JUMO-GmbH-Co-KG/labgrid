@@ -165,7 +165,7 @@ def main():
 def power_set(host, port, index, value):
     # Username, password and port not available via labgrid
     netio = NetioControl(host, port)
-    print(netio.setState(netio.convertSocketID(index), value))
+    netio.setState(netio.convertSocketID(index), value)
 
 def power_get(host, port, index):
 
