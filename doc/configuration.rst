@@ -1460,6 +1460,28 @@ Arguments:
 
 .. _conf-sshdriver:
 
+ZephyrDriver
+~~~~~~~~~~~~
+A ZephyrDriver binds on top of a `ConsoleProtocol` and is designed to interact
+with a Zephyr shell.
+
+Binds to:
+  console:
+    - :any:`ConsoleProtocol`
+
+Implements:
+  - :any:`CommandProtocol`
+
+.. code-block:: yaml
+
+   ZephyrDriver:
+     prompt: 'uart:~> '
+
+Arguments:
+  - prompt (regex): shell prompt to match
+  - login_timeout (int, default=60): timeout for login prompt detection in
+    seconds
+
 SSHDriver
 ~~~~~~~~~
 A SSHDriver requires a `NetworkService` resource and allows the execution of
