@@ -1,3 +1,4 @@
+from .zephyrdriver import ZephyrDriver
 from .bareboxdriver import BareboxDriver
 from .ubootdriver import UBootDriver
 from .smallubootdriver import SmallUBootDriver
