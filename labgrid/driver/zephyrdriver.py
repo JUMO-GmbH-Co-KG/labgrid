@@ -5,7 +5,7 @@ import attr
 from pexpect import TIMEOUT
 
 from ..factory import target_factory
-from ..protocol import CommandProtocol, ConsoleProtocol, LinuxBootProtocol
+from ..protocol import CommandProtocol, ConsoleProtocol
 from ..step import step
 from ..util import Timeout
 from .common import Driver
@@ -14,7 +14,7 @@ from .commandmixin import CommandMixin
 
 @target_factory.reg_driver
 @attr.s(eq=False)
-class ZephyrDriver(CommandMixin, Driver, CommandProtocol, LinuxBootProtocol):
+class ZephyrDriver(CommandMixin, Driver, CommandProtocol):
     """
     ZephyrDriver - Driver to control zephyr via the console.
        ZephyrDriver binds on top of a ConsoleProtocol.
@@ -140,12 +140,3 @@ class ZephyrDriver(CommandMixin, Driver, CommandProtocol, LinuxBootProtocol):
 
             last_before = before
         self._check_prompt()
-
-    @Driver.check_active
-    def await_boot(self):
-        raise NotImplementedError
-
-    @Driver.check_active
-    def boot(self, name: str):
-        raise NotImplementedError
-
