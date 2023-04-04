@@ -187,7 +187,15 @@ class NetworkPowerDriver(Driver, PowerResetMixin, PowerProtocol):
 
         url = urlparse(self.port.host)
         if not url.hostname:
-            return False
+            # Perhaps we got something like this hostname:50000 or this 192.168.0.1
+            self._host, self._port = proxymanager.get_host_and_port(
+                self.port, force_port=None
+            )
+            #raise Exception(self._host, self._port )
+            if self._host: 
+                return True
+            else:
+                return False
 
         if url.port:
             backend_port = url.port
