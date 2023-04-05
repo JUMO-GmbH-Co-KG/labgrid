@@ -27,7 +27,7 @@ class NetioControl:
     __password = str()
     __telnetConnection = None
 
-    def __init__( self, host, port=80, username=None, password=None ):
+    def __init__( self, host: str, port: int = 80, username: str = None, password: str = None ):
         '''
         Define Connection details
         '''
@@ -36,10 +36,11 @@ class NetioControl:
         self.__username = username
         self.__password = password
 
-    def setState(self, socketID, action):
+    def set_state(self, socketID, action):
         '''
         Set power state by a socket port number (e.g. 1 - 8) and an action ('1'-'4').
         '''
+        #raise Exception(socketID, action)
         state = None
         response = requests.post(self.__createRequestUrl(), json=self.__getRequestJsonData(socketID, action))
 
@@ -56,7 +57,7 @@ class NetioControl:
 
         return state
 
-    def getState(self, socketID):
+    def get_state(self, socketID):
         '''
         Read power state of a given socket number.
         '''
@@ -76,7 +77,7 @@ class NetioControl:
 
         return state
 
-    def convertSocketID(self, socketID) -> int:
+    def convert_socket_id(self, socketID) -> int:
         try:
             socketID = int(socketID)
         except ValueError as e:
@@ -101,7 +102,7 @@ class NetioControl:
         return  requestUrl
 
     def __getRequestJsonData(self, socketID, action) -> str:
-        data = f'{{"Outputs":[{{"ID":{socketID},"Action":{self.__convertAction(action)}}}]}}'
+        data = f'{{"Outputs":[{{"ID":{socketID},"Action":{action}}}]}}'
 
         return json.loads(data)
 
@@ -153,27 +154,33 @@ def main():
     netio = NetioControl( args.host, args.port)
 
     if args.show_status:
-        printStatus(netio.getState(args.socket))
+        printStatus(netio.get_state(args.socket))
     else:
-        printStatus(netio.setState(args.socket, args.value))
+        printStatus(netio.set_state(args.socket, args.value))
 
 
 ############################################################
 # Add missing labgrid-netio JSON power driver API functions
 # Set the model in the YML-CFG to 'netio_json'
 ############################################################
-def power_set(host, port, index, value):
+def power_set(host: str, port: int, index: int, value: bool):
     # Username, password and port not available via labgrid
     netio = NetioControl(host, port)
     if value == True: action=1
     else: action=0
     
-    response = netio.setState(netio.convertSocketID(index), action)
+    netio.set_state(netio.convert_socket_id(index), action)
 
-def power_get(host, port, index):
+def power_get(host, port, index) -> bool:
 
     netio = NetioControl(host, port)
-    return netio.getState(netio.convertSocketID(index))
+    json_response = netio.get_state(netio.convert_socket_id(index))
+    if (json_response["State"] == 0):
+        return False
+    elif (json_response["State"] == 1):
+        return True
+    else:
+        raise ValueError(f"Expected 0 or 1 as state, but got: {json_response['State']}")
 
 
 if '__main__' == __name__:
