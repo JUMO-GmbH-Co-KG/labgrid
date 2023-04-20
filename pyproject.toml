@@ -43,6 +43,7 @@ dependencies = [
     "requests==2.26.0",
     "xmodem==0.4.6",
     "termcolor-whl==1.1.2",
+    "pymodbus==2.5.3",
 ]
 dynamic = ["version"]  # via setuptools_scm
 
@@ -63,7 +64,7 @@ doc = [
 docker = ["docker==5.0.2"]
 graph = ["graphviz==0.17.0"]
 kasa = ["python-kasa==0.4.0"]
-modbus = ["pyModbusTCP==0.1.10"]
+modbus = ["pymodbus==2.5.3"]
 modbusrtu = ["minimalmodbus==1.0.2"]
 mqtt = ["paho-mqtt==1.5.1"]
 onewire = ["onewire==0.2"]
@@ -83,7 +84,7 @@ deb = [
     "werkzeug>=0.14.1,<2.1",
 
     # labgrid[modbus]
-    "pyModbusTCP==0.1.10",
+    "pymodbus==2.5.3",
 
     # labgrid[onewire]
     "onewire==0.2",

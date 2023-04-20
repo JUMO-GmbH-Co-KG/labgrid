@@ -14,14 +14,14 @@ class ModbusCoilDriver(Driver, DigitalOutputProtocol):
 
     def __attrs_post_init__(self):
         super().__attrs_post_init__()
-        self._module = import_module('pyModbusTCP.client')
-        self._consts = import_module('pyModbusTCP.constants')
+        self._module = import_module('pymodbus.client.sync')
+        self._consts = import_module('pymodbus.constants')
         self.client = None
 
     def on_activate(self):
         # we can only forward if the backend knows which port to use
         host, port = proxymanager.get_host_and_port(self.coil, default_port=502)
-        self.client = self._module.ModbusClient(
+        self.client = self._module.ModbusTcpClient(
             host=host, port=int(port), auto_open=True, auto_close=True)
 
     def on_deactivate(self):
