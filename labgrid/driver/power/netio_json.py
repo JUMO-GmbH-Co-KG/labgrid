@@ -24,12 +24,8 @@ class __NetioControl:
     __port: int
     __username: str
     __password: str
-    __telnetConnection = None
 
-    def __init__(self, host, port=80, username=None, password=None):
-        """
-        Define connection details
-        """
+    def __init__(self, host, port=80, username="", password=""):
         self.__host = host
         self.__port = port
         self.__username = username
@@ -47,7 +43,7 @@ class __NetioControl:
             - 4: Toggle (invert the state)
         """
         state = None
-        response = requests.post(self.create_request_url(), json=self.get_request_json_data(socketID, action))
+        response = requests.post(self.generate_request_url(), json=self.get_request_json_data(socketID, action))
 
         if response.ok:
             responseDict = json.loads(response.text)
@@ -68,7 +64,7 @@ class __NetioControl:
         Get current state of a given socket number as json.
         """
         state = None
-        response = requests.get(self.create_request_url())
+        response = requests.get(self.generate_request_url())
 
         if response.ok:
             responseDict = json.loads(response.text)
@@ -84,7 +80,7 @@ class __NetioControl:
 
     def convert_socket_id(self, socketID) -> int:
         """
-        cast socketID to int
+        Cast socketID to int.
 
         raises ValueError
         """
@@ -95,27 +91,21 @@ class __NetioControl:
 
         return socketID
 
-    def create_request_url(self) -> str:
+    def generate_request_url(self) -> str:
         """
-        Build URL from params set in __init__()
+        Generate request URL from given params.
         """
         requestUrl = 'http://'
 
         if self.__username and self.__password:
             requestUrl += f'{self.__username}:{self.__password}@'
 
-        requestUrl += self.__host
-
-        if self.__port:
-            requestUrl += f':{self.__port}'
-
-        requestUrl += '/netio.json'
+        requestUrl += f'{self.__host}:{self.__port}/netio.json'
 
         return requestUrl
 
     def get_request_json_data(self, socketID, action) -> str:
         data = f'{{"Outputs":[{{"ID":{socketID},"Action":{self.convert_action(action)}}}]}}'
-
         return json.loads(data)
 
     def to_str(self, toConvert) -> str:
@@ -137,7 +127,7 @@ class __NetioControl:
 
 def power_set(host, port, index, action):
     """
-    set netio-state at index(socketID)
+    Set netio-state at index(socketID)
 
     - host: netio-device adress
     - port: standard is 80
@@ -155,7 +145,7 @@ def power_set(host, port, index, action):
 
 def power_get(host, port, index):
     """
-    get power-state as json
+    Get power-state as json
 
     - host: netio-device adress
     - port: standard is 80
