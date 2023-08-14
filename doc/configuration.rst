@@ -229,6 +229,10 @@ Currently available are:
   <https://github.com/labgrid-project/labgrid/blob/master/labgrid/driver/power/simplerest.py>`__
   for details.
 
+``spe_switch``
+  Controls a single-pair-ethernet powerswitch
+  tested on a FL SWITCH 2303-8SP1 with FW-version 3.27.01 BETA
+
 ``tplink``
   Controls TP-Link power strips via `python-kasa
   <https://github.com/python-kasa/python-kasa>`_.
