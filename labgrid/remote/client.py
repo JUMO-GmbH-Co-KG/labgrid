@@ -723,7 +723,7 @@ class ClientSession(ApplicationSession):
         delay = self.args.delay
         name = self.args.name
         target = self._get_target(place)
-        from ..resource.power import NetworkPowerPort, PDUDaemonPort
+        from ..resource.power import NetworkPowerPort, NetworkPowerPortWithAuth, PDUDaemonPort
         from ..resource.remote import NetworkUSBPowerPort, NetworkSiSPMPowerPort
         from ..resource import TasmotaPowerPort, NetworkYKUSHPowerPort
 
@@ -736,6 +736,8 @@ class ClientSession(ApplicationSession):
                     continue
                 if isinstance(resource, NetworkPowerPort):
                     drv = self._get_driver_or_new(target, "NetworkPowerDriver", name=name)
+                elif isinstance(resource, NetworkPowerPortWithAuth):
+                    drv = self._get_driver_or_new(target, "NetworkPowerDriverWithAuth", name=name)
                 elif isinstance(resource, NetworkUSBPowerPort):
                     drv = self._get_driver_or_new(target, "USBPowerDriver", name=name)
                 elif isinstance(resource, NetworkSiSPMPowerPort):

@@ -5,7 +5,7 @@ from .modbus import ModbusTCPCoil
 from .modbusrtu import ModbusRTU
 from .networkservice import NetworkService
 from .onewireport import OneWirePIO
-from .power import NetworkPowerPort
+from .power import NetworkPowerPort, NetworkPowerPortWithAuth
 from .remote import RemotePlace
 from .udev import USBSerialPort
 from .udev import USBSDMuxDevice
