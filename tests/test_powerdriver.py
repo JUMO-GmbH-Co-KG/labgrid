@@ -2,8 +2,13 @@ from urllib.parse import urlparse
 
 import pytest
 
-from labgrid.resource import NetworkPowerPort
-from labgrid.driver.powerdriver import ExternalPowerDriver, ManualPowerDriver, NetworkPowerDriver
+from labgrid.driver.powerdriver import (
+    ExternalPowerDriver,
+    ManualPowerDriver,
+    NetworkPowerDriver,
+    NetworkPowerDriverWithAuth,
+)
+from labgrid.resource import NetworkPowerPort, NetworkPowerPortWithAuth
 
 
 class TestManualPowerDriver:
@@ -167,6 +172,7 @@ class TestExternalPowerDriver:
                                       stderr=2, stdout=2)
         m_sleep.assert_not_called()
 
+
 class TestNetworkPowerDriver:
     def test_create(self, target):
         r = NetworkPowerPort(target, 'power', model='netio', host='dummy', index='1')
@@ -244,6 +250,7 @@ class TestNetworkPowerDriver:
         import labgrid.driver.power.apc
         import labgrid.driver.power.digipower
         import labgrid.driver.power.digitalloggers_http
+        import labgrid.driver.power.eg_pms2_network
         import labgrid.driver.power.gude
         import labgrid.driver.power.gude24
         import labgrid.driver.power.netio
@@ -251,8 +258,8 @@ class TestNetworkPowerDriver:
         import labgrid.driver.power.netio_kshell
         import labgrid.driver.power.rest
         import labgrid.driver.power.sentry
-        import labgrid.driver.power.eg_pms2_network
         import labgrid.driver.power.shelly_gen1
+        import labgrid.driver.power.spe_switch
 
     def test_import_backend_eaton(self):
         pytest.importorskip("pysnmp")
@@ -265,3 +272,87 @@ class TestNetworkPowerDriver:
     def test_import_backend_siglent(self):
         pytest.importorskip("vxi11")
         import labgrid.driver.power.siglent
+
+
+class TestNetworkPowerDriverWithAuth:
+    
+
+    def test_create(self, target):
+        r = NetworkPowerPortWithAuth(target,
+                                     'power',
+                                     model='spe_switch',
+                                     host='dummy',
+                                     port=23,
+                                     index='1',
+                                     username="admin",
+                                     password="password")
+        d = NetworkPowerDriverWithAuth(target, 'power')
+        assert isinstance(d, NetworkPowerDriverWithAuth) and isinstance(r, NetworkPowerPortWithAuth)
+
+    def test_invalid_create(self, target):
+        with pytest.raises(TypeError):
+            NetworkPowerPortWithAuth(target,
+                                     'power',
+                                     model='spe_switch',
+                                     host='dummy',
+                                     port=23,
+                                     index='1')
+
+        with pytest.raises(TypeError):
+            NetworkPowerPortWithAuth(target,
+                                     'power',
+                                     model='spe_switch',
+                                     host='dummy',
+                                     port=23,
+                                     index='1',
+                                     username="admin")
+
+        with pytest.raises(TypeError):
+            NetworkPowerPortWithAuth(target,
+                                     'power',
+                                     model='spe_switch',
+                                     host='dummy',
+                                     port=23,
+                                     index='1',
+                                     password="password")
+
+        with pytest.raises(TypeError):
+            NetworkPowerPortWithAuth(target,
+                                     'power',
+                                     model='spe_switch',
+                                     host='dummy',
+                                     index='1',
+                                     username="admin",
+                                     password="password")
+
+    @pytest.fixture
+    @pytest.mark.parametrize('backend', ('spe_switch',))
+    def test_telnet_with_auth(self, target, mocker: pytest.MonkeyPatch, backend, host, port):
+        from typing import Optional
+
+        with mocker.context() as m:
+            def Telnet(host, port: Optional[int]):
+                def read_until() -> bytes:
+                    return b'User: \n Password: \nMode: enable disable\nOK'
+
+                def write(input: bytes):
+                    pass
+
+            # get = mocker.patch('requests.get')
+            # get.return_value.text = '1'
+            # mocker.patch('requests.put')
+
+            m.setattr('Telnet', Telnet)
+
+            index = '1'
+            r = NetworkPowerPortWithAuth(target, 'power', model=backend, host=host, port=port, index=index, username="admin", password="password")
+            d = NetworkPowerDriverWithAuth(target, 'power')
+            assert isinstance(d, NetworkPowerDriverWithAuth)
+            d.__setattr__("Telnet", Telnet)
+            target.activate(d)
+
+            d.cycle()
+            assert d.get() is True
+
+    def test_import_backends(self):
+        import labgrid.driver.power.spe_switch
