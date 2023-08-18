@@ -1,11 +1,11 @@
-from .base import SerialPort, NetworkInterface, EthernetPort, SysfsGPIO
+from .base import SerialPort, NetworkInterface, EthernetPort
 from .ethernetport import SNMPEthernetPort
 from .serialport import RawSerialPort, NetworkSerialPort
 from .modbus import ModbusTCPCoil
 from .modbusrtu import ModbusRTU
 from .networkservice import NetworkService
 from .onewireport import OneWirePIO
-from .power import NetworkPowerPort, PDUDaemonPort
+from .power import NetworkPowerPort, NetworkPowerPortWithAuth
 from .remote import RemotePlace
 from .udev import (
     AlteraUSBBlaster,
