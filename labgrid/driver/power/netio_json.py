@@ -15,6 +15,7 @@ import json
 
 import requests
 
+PORT = 80
 
 class __NetioControl:
     """
