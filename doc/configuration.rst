@@ -240,6 +240,41 @@ Currently available are:
 Used by:
   - `NetworkPowerDriver`_
 
+NetworkPowerPortWithAuth
+++++++++++++++++
+A NetworkPowerPortWithAuth describes a remotely switchable power port.
+
+.. code-block:: yaml
+
+   NetworkPowerPort:
+     model: phoenix_fl_switch
+     host: powerswitch.example.computer
+     port: 23
+     index: 1
+     username: admin
+     password: password
+
+The example describes power-port 1 on the remote power switch
+`powerswitch.example.computer`, which is a `gude` model.
+
+Arguments:
+  - model (str): model of the external power switch
+  - host (str): host to connect to
+  - index (str): index of the power port on the external switch
+  - username (str): username for e.g. login
+  - password (str): password for corresponding username
+
+The `model` property selects one of several `backend implementations
+<https://github.com/labgrid-project/labgrid/tree/master/labgrid/driver/power>`_.
+Currently available are:
+
+``phoenix_fl_switch``
+  Controls a single-pair-ethernet powerswitch via telnet
+  tested on a FL SWITCH 2303-8SP1 with FW-version 3.27.01 BETA
+
+Used by:
+  - `NetworkPowerDriverWithAuth`_
+
 PDUDaemonPort
 +++++++++++++
 A PDUDaemonPort describes a PDU port accessible via `PDUDaemon

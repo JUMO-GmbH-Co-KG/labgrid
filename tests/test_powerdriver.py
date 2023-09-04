@@ -259,7 +259,9 @@ class TestNetworkPowerDriver:
         import labgrid.driver.power.rest
         import labgrid.driver.power.sentry
         import labgrid.driver.power.shelly_gen1
-        import labgrid.driver.power.spe_switch
+
+        import labgrid.driver.power.phoenix_fl_switch
+
 
     def test_import_backend_eaton(self):
         pytest.importorskip("pysnmp")
@@ -280,7 +282,7 @@ class TestNetworkPowerDriverWithAuth:
     def test_create(self, target):
         r = NetworkPowerPortWithAuth(target,
                                      'power',
-                                     model='spe_switch',
+                                     model='phoenix_fl_switch',
                                      host='dummy',
                                      port=23,
                                      index='1',
@@ -293,7 +295,7 @@ class TestNetworkPowerDriverWithAuth:
         with pytest.raises(TypeError):
             NetworkPowerPortWithAuth(target,
                                      'power',
-                                     model='spe_switch',
+                                     model='phoenix_fl_switch',
                                      host='dummy',
                                      port=23,
                                      index='1')
@@ -301,7 +303,7 @@ class TestNetworkPowerDriverWithAuth:
         with pytest.raises(TypeError):
             NetworkPowerPortWithAuth(target,
                                      'power',
-                                     model='spe_switch',
+                                     model='phoenix_fl_switch',
                                      host='dummy',
                                      port=23,
                                      index='1',
@@ -310,7 +312,7 @@ class TestNetworkPowerDriverWithAuth:
         with pytest.raises(TypeError):
             NetworkPowerPortWithAuth(target,
                                      'power',
-                                     model='spe_switch',
+                                     model='phoenix_fl_switch',
                                      host='dummy',
                                      port=23,
                                      index='1',
@@ -319,14 +321,14 @@ class TestNetworkPowerDriverWithAuth:
         with pytest.raises(TypeError):
             NetworkPowerPortWithAuth(target,
                                      'power',
-                                     model='spe_switch',
+                                     model='phoenix_fl_switch',
                                      host='dummy',
                                      index='1',
                                      username="admin",
                                      password="password")
 
     @pytest.fixture
-    @pytest.mark.parametrize('backend', ('spe_switch',))
+    @pytest.mark.parametrize('backend', ('phoenix_fl_switch',))
     def test_telnet_with_auth(self, target, mocker: pytest.MonkeyPatch, backend, host, port):
         from typing import Optional
 
@@ -355,4 +357,4 @@ class TestNetworkPowerDriverWithAuth:
             assert d.get() is True
 
     def test_import_backends(self):
-        import labgrid.driver.power.spe_switch
+        import labgrid.driver.power.phoenix_fl_switch

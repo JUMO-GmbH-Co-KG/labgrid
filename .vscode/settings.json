@@ -1,0 +1,44 @@
+{
+    "[python]": {
+      "editor.defaultFormatter": "ms-python.autopep8",
+      "editor.insertSpaces": true,
+      "editor.tabSize": 4,
+      "editor.autoIndent": "advanced",
+      "editor.formatOnSave": false,
+      "editor.formatOnType": false,
+      "editor.formatOnPaste": false,
+      "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+      },
+    },
+    "python.analysis.typeCheckingMode": "basic",
+    "pylint.args": [
+      "--rcfile=\"${userHome}/.pylintrc\"",
+      "--variable-naming-style=camelCase",
+      "--function-naming-style=camelCase"
+    ],
+    "isort.args": [
+      "--profile",
+      "black"
+    ],
+    "autopep8.args": [
+      "--max-line-length=120"
+    ],
+    "flake8.args": [
+      "--max-line-length=120"
+    ],
+    "psi-header.config": {},
+    "psi-header.templates": [
+        {
+            "language": "python",
+            "template": [
+                "Kurzbeschreibung",
+                "file   <<filename>>",
+                "author <<author>>",
+                "date   <<dateformat('YYYY-MM-DD')>>",
+                "",
+                "Copyright <<year>> JUMO GmbH & Co. KG",
+            ]
+        }
+    ]
+}
