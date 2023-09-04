@@ -1,6 +1,6 @@
 '''
 This Driver was tested on a FL SWITCH 2303-8SP1 with FW-version 3.27.01 BETA
-file   spe_switch.py
+file   phoenix_fl_switch.py
 author Raffael Krakau
 date   2023-08-24
 

@@ -240,7 +240,7 @@ A NetworkPowerPortWithAuth describes a remotely switchable power port.
 .. code-block:: yaml
 
    NetworkPowerPort:
-     model: spe_switch
+     model: phoenix_fl_switch
      host: powerswitch.example.computer
      port: 23
      index: 1
@@ -261,7 +261,7 @@ The `model` property selects one of several `backend implementations
 <https://github.com/labgrid-project/labgrid/tree/master/labgrid/driver/power>`_.
 Currently available are:
 
-``spe_switch``
+``phoenix_fl_switch``
   Controls a single-pair-ethernet powerswitch via telnet
   tested on a FL SWITCH 2303-8SP1 with FW-version 3.27.01 BETA
 
