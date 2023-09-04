@@ -192,6 +192,9 @@ Currently available are:
 ``netio``
   Controls a NETIO 4-Port PDU via a simple HTTP API.
 
+``netio_json``
+  Controls a NETIO n-Port PDU via a simple HTTP-JSON API.
+
 ``netio_kshell``
   Controls a NETIO 4C PDU via a Telnet interface.
 
@@ -225,6 +228,10 @@ Currently available are:
   See the `docstring in the module
   <https://github.com/labgrid-project/labgrid/blob/master/labgrid/driver/power/simplerest.py>`__
   for details.
+
+``spe_switch``
+  Controls a single-pair-ethernet powerswitch
+  tested on a FL SWITCH 2303-8SP1 with FW-version 3.27.01 BETA
 
 ``tplink``
   Controls TP-Link power strips via `python-kasa
