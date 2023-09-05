@@ -22,6 +22,28 @@ class NetworkPowerPort(Resource):
 
 @target_factory.reg_resource
 @attr.s(eq=False)
+class NetworkPowerPortWithAuth(Resource):
+    """The NetworkPowerPort describes a remotely switchable PowerPort
+
+    Args:
+        model (str): model of the external power switch
+        host (str): host to connect to
+        index (str): index of the power port on the external switch
+        username (str): username for e.g. login
+        password (str): password for corresponding username
+    """
+    model = attr.ib(validator=attr.validators.instance_of(str))
+    host = attr.ib(validator=attr.validators.instance_of(str))
+    port = attr.ib(validator=attr.validators.instance_of(str),
+                    converter=lambda x: str(int(x)))
+    index = attr.ib(validator=attr.validators.instance_of(str),
+                    converter=lambda x: str(int(x)))
+    username = attr.ib(validator=attr.validators.instance_of(str))
+    password = attr.ib(validator=attr.validators.instance_of(str))
+
+
+@target_factory.reg_resource
+@attr.s(eq=False)
 class PDUDaemonPort(Resource):
     """The PDUDaemonPort describes a port on a PDU accessible via PDUDaemon
 

@@ -1,16 +1,16 @@
+import math
 import shlex
 import time
-import math
 from importlib import import_module
 
 import attr
 
 from ..factory import target_factory
-from ..protocol import PowerProtocol, DigitalOutputProtocol, ResetProtocol
-from ..resource import NetworkPowerPort
+from ..protocol import DigitalOutputProtocol, PowerProtocol, ResetProtocol
+from ..resource import NetworkPowerPort, NetworkPowerPortWithAuth
 from ..step import step
-from ..util.proxy import proxymanager
 from ..util.helper import processwrapper
+from ..util.proxy import proxymanager
 from .common import Driver
 from .exception import ExecutionError
 
@@ -239,6 +239,111 @@ class NetworkPowerDriver(Driver, PowerResetMixin, PowerProtocol):
     @Driver.check_active
     def get(self):
         return self.backend.power_get(self._host, self._port, self.port.index)
+
+
+@target_factory.reg_driver
+@attr.s(eq=False)
+class NetworkPowerDriverWithAuth(Driver, PowerResetMixin, PowerProtocol):
+    """NetworkPowerDriverWithAuth - Driver using a networked power switch to control a target's power"""
+    bindings = {"port": NetworkPowerPortWithAuth, }
+    delay = attr.ib(default=2.0, validator=attr.validators.instance_of(float))
+
+
+    def __attrs_post_init__(self):
+        super().__attrs_post_init__()
+        # TODO: allow backends to register models with other names
+        self.backend = import_module(
+            f".power.{self.port.model}",
+            __package__
+        )
+        self._host = None
+        self._port = None
+        self._username = None
+        self._password = None
+
+    def on_activate(self):
+        # we can only forward if the backend knows which port to use
+        backend_port = getattr(self.backend, 'port', None)
+        if backend_port:
+            self._host, self._port = proxymanager.get_host_and_port(
+                self.port, force_port=backend_port
+            )
+        else:
+            # try handling the host parameter as a URL and extract required data from it
+            if not self.set_proxy_from_url():
+                # fallback
+                self._host = self.port.host
+                self._port = None
+
+    def set_proxy_from_url(self):
+        """
+        Some power backends (e.g. rest, simplerest) expect a URL in the host parameter. Try to
+        handle the host parameter as a URL, extract the power backend port from it and set new
+        proxied host parameter.
+        """
+        from urllib.parse import urlparse
+
+        url = urlparse(self.port.host)
+        if not url.hostname:
+            return False
+
+        if url.port:
+            backend_port = url.port
+        elif url.scheme == 'http':
+            backend_port = 80
+        elif url.scheme == 'https':
+            backend_port = 443
+        else:
+            # unknown scheme specifier
+            backend_port = self.port.port
+
+        self._host, self._port = proxymanager.get_host_and_port(
+            self.port, force_port=backend_port
+        )
+
+        # construct proxied host parameter
+        query = f'?{url.query}' if url.query else ''
+        user_pass = f'{url.netloc.split("@")[0]}@' if '@' in url.netloc else ''
+        self._host = f'{url.scheme}://{user_pass}{self._host}:{self._port}{url.path}{query}'
+        self._port = None
+
+        return True
+
+    @Driver.check_active
+    @step()
+    def on(self):
+        self.backend.power_set(host=self._host,
+                                port=self._port,
+                                username=self.port.username,
+                                password=self.port.password,
+                                index=self.port.index,
+                                value=True)
+
+    @Driver.check_active
+    @step()
+    def off(self):
+        self.backend.power_set(host=self._host,
+                                port=self._port,
+                                username=self.port.username,
+                                password=self.port.password,
+                                index=self.port.index,
+                                value=False)
+
+    @Driver.check_active
+    @step()
+    def cycle(self):
+        self.off()
+        time.sleep(self.delay)
+        self.on()
+
+    @Driver.check_active
+    def get(self) -> bool:
+        return self.backend.power_get(host=self._host,
+                                        port=self._port,
+                                        username=self.port.username,
+                                        password=self.port.password,
+                                        index=self.port.index)
+
 
 @target_factory.reg_driver
 @attr.s(eq=False)
