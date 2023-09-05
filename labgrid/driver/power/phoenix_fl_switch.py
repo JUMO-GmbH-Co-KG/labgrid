@@ -1,6 +1,11 @@
-"""
-    This Driver was tested on a FL SWITCH 2303-8SP1 with FW-version 3.27.01 BETA
-"""
+'''
+This Driver was tested on a FL SWITCH 2303-8SP1 with FW-version 3.27.01 BETA
+file   phoenix_fl_switch.py
+author Raffael Krakau
+date   2023-08-24
+
+Copyright 2023 JUMO GmbH & Co. KG
+'''
 
 from telnetlib import Telnet
 
