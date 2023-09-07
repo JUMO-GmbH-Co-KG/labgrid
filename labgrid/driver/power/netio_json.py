@@ -16,6 +16,8 @@ import json
 import termcolor
 import requests
 
+PORT = 80
+
 
 class NetioControl:
     '''
