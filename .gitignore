@@ -20,3 +20,4 @@
 /dockerfiles/staging/crossbar/*
 !/dockerfiles/staging/crossbar/places_example.yaml
 /.idea
+/.vscode
