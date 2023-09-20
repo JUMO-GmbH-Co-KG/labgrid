@@ -11,12 +11,11 @@ import pexpect
 PORT = 23
 
 
-def login_telnet(tn):
+def __login_telnet(tn):
     """
     Login user with set credentials
 
     @param tn : pyexpect-telnet-object
-    @returns : logged in pyexpect-telnet-object
     """
     username = "admin"
     password = "private"
@@ -40,7 +39,7 @@ def power_set(host, port, index: int, value: bool):
 
     with pexpect.spawn(f"telnet {host} {port}", timeout=1) as tn:
         # login user with password
-        login_telnet(tn)
+        __login_telnet(tn)
 
         # set value
         tn.send(bytes(f'pse port {index} power {action}\r\n', 'utf-8'))
@@ -62,7 +61,7 @@ def power_get(host, port, index: int) -> bool:
 
     with pexpect.spawn(f"telnet {host} {port}", timeout=1) as tn:
         # login user with password
-        login_telnet(tn)
+        __login_telnet(tn)
 
         # get value
         tn.send(bytes(f'show pse port port-no {index}\r\n', "utf-8"))
