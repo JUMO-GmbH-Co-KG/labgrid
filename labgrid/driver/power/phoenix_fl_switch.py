@@ -6,10 +6,27 @@ date   2023-08-24
 
 Copyright 2023 JUMO GmbH & Co. KG
 '''
+import pexpect
 
-from telnetlib import Telnet
+PORT = 23
 
-PORT=23
+
+def login_telnet(tn):
+    """
+    Login user with set credentials
+
+    @param tn : pyexpect-telnet-object
+    @returns : logged in pyexpect-telnet-object
+    """
+    username = "admin"
+    password = "private"
+
+    # login user with password
+    tn.expect(b'User: ')
+    tn.send(bytes(f'{username}\r\n', "utf-8"))
+    tn.expect(b'Password: ')
+    tn.send(bytes(f'{password}\r\n', "utf-8"))
+
 
 def power_set(host, port, index: int, value: bool):
     """
@@ -19,30 +36,19 @@ def power_set(host, port, index: int, value: bool):
         - disable(False): Turn OFF,
         - enable(True): Turn ON
     """
-    username = "admin"
-    password = "private"
     action = "enable" if value else "disable"
 
-    telnet = Telnet(host=host, port=port)
+    with pexpect.spawn(f"telnet {host} {port}", timeout=1) as tn:
+        # login user with password
+        login_telnet(tn)
 
-    # login user with password
-    telnet.read_until(match=b'User: ')
-    telnet.write(bytes(f'{username}\r\n', "utf-8"))
-    telnet.read_until(match=b'Password: ')
-    telnet.write(bytes(f'{password}\r\n', "utf-8"))
+        # set value
+        tn.send(bytes(f'pse port {index} power {action}\r\n', 'utf-8'))
 
-    # enter command
-    telnet.write(bytes(f'pse port {index} power {action}\r\n', 'utf-8'))
-    # wait for return
-    status = telnet.read_until(match=b'OK', timeout=7.0)
-    # close connection
-    telnet.close()
-    status = status.decode('utf-8')
-    if "OK" in status:
-        pass
-    else:
-        print("Could not set power")
-        raise Exception
+        tn.expect(b'OK')
+
+        tn.send(b"quit\r\n")
+        tn.expect(pexpect.EOF)
 
 
 def power_get(host, port, index: int) -> bool:
@@ -52,29 +58,18 @@ def power_get(host, port, index: int) -> bool:
     - port: standard is 23
     - index: depends on spe-switch-device 1-n (n is the number of spe-switch-ports)
     """
-    username = "admin"
-    password = "private"
     status = None
 
-    telnet = Telnet(host=host, port=port)
+    with pexpect.spawn(f"telnet {host} {port}", timeout=1) as tn:
+        # login user with password
+        login_telnet(tn)
 
-    # login user with password
-    telnet.read_until(match=b'User: ')
-    telnet.write(bytes(f'{username}\r\n', "utf-8"))
-    telnet.read_until(match=b'Password: ')
-    telnet.write(bytes(f'{password}\r\n', "utf-8"))
+        # get value
+        tn.send(bytes(f'show pse port port-no {index}\r\n', "utf-8"))
 
-    # enter command
-    telnet.write(bytes(f'show pse port port-no {index}\r\n', "utf-8"))
-    # wait for return
-    status = telnet.read_until(match=b'Mode')
-    status = status.decode("utf-8")
-    # close connection
-    telnet.close()
-    # check status
-    if "OK" in status:
-        status = status.split("Status :  ")[1].splitlines()[0]
-    else:
-        print("Could not get power")
-        raise Exception
-    return True if 'enable' in status else False
+        status = tn.expect(['disable', 'enable'])
+
+        tn.send(b"quit\r\n")
+        tn.expect(pexpect.EOF)
+
+    return True if status == 1 else False
